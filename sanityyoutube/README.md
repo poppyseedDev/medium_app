@@ -5,6 +5,11 @@ yarn global add @sanity/client
 sanity init --coupon sonny2022
 
 ```
+To start server write:
+```
+sanity start
+```
+
 
 Congratulations, you have now installed the Sanity Content Studio, an open source real-time content editing environment connected to the Sanity backend.
 
