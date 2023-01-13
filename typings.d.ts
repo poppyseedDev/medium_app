@@ -16,6 +16,7 @@ export interface Post {
             };
         };
     };
+    comments: Comment[];
     description: string;
     mainImage: {
         _type: string;
