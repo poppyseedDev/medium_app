@@ -1,5 +1,5 @@
 import { GetStaticProps } from 'next';
-import React from 'react'
+import React, { useState } from 'react'
 import Header from '../../components/Header';
 import { sanityClient, urlFor} from "../../sanity";
 import { Post } from '../../typings';
@@ -20,17 +20,27 @@ interface IFormInput {
   
 
 function Post({ post }: Props) {
+    const [submitted, setSubmitted] = useState(false);
+    console.log(post);
 
     //react hook form
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<IFormInput>();
+    const { 
+        register, 
+        handleSubmit, 
+        watch, 
+        formState: { errors } 
+    } = useForm<IFormInput>();
+
     const onSubmit: SubmitHandler<IFormInput> = async(data) => {
         await fetch('/api/createComment', {
             method: 'POST',
             body: JSON.stringify(data),
         }).then(() => {
             console.log(data);
+            setSubmitted(true);
         }).catch((err) => {
             console.log(err);
+            setSubmitted(false);
         })
     };
 
@@ -88,7 +98,17 @@ function Post({ post }: Props) {
 
 
             <hr className="max-w-lg my-5 mx-auto border border-yellow-500" />
-
+            
+            {submitted ? (
+                <div className='flex flex-col p-10 my-10 bg-yellow-500 text-gray-700 max-w-2xl font-bold mx-auto'>
+                    <h3 className='text-3xl font-bold py-3'>
+                        Thank you for submitting your comment!
+                    </h3>
+                    <p>
+                        Once it has been approved it will appear below!
+                    </p>
+                </div>
+            ) : (
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col p-5 max-w-2xl mx-auto">
                 <h3 className="text-sm text-yellow-500">Enjoyed this article?</h3>
                 <h4 className="text-3xl font-bold">Leave a comment bellow!</h4>
@@ -155,6 +175,9 @@ function Post({ post }: Props) {
                 />
                 
             </form>
+            )}
+
+
 
         </main>
     )
@@ -162,6 +185,7 @@ function Post({ post }: Props) {
 
 export default Post;
 
+//looks at all the pages that exist
 export const getStaticPaths = async () => {
     const query = `*[_type == "post"] {
         _id,
@@ -182,6 +206,7 @@ export const getStaticPaths = async () => {
     };
 };
 
+// populates the page with props
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const query = `*[_type == "post" && slug.current == $slug][0] {
         _id,
@@ -216,6 +241,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
             post,
         },
         revalidate: 60,
-        // after 60 seconds it updates the cache
+        // after 60 seconds it updates the old cache
     };
 };

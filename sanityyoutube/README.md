@@ -1,5 +1,11 @@
 # Sanity Blogging Content Studio
 
+To start type
+```
+sanity install
+
+```
+
 ```
 yarn global add @sanity/client
 sanity init --coupon sonny2022
